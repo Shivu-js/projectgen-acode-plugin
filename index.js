@@ -1,4 +1,4 @@
-import projects from "./data/projects.js";
+const projects = require("./data/projects.js");
 
 let panel;
 
@@ -9,7 +9,7 @@ export default {
   },
 
   onunload() {
-    if (panel) panel.destroy();
+    if (panel && panel.destroy) panel.destroy();
   },
 
   showUI() {
@@ -17,22 +17,33 @@ export default {
       id: "projectgen-panel",
       title: "🚀 ProjectGen",
       position: "right",
-      html: acode.require("fs").readFileSync(this.baseUrl + "ui.html", "utf8"),
+      html: acode.require("fs").readFileSync(
+        this.baseUrl + "/ui.html",
+        "utf8"
+      ),
       onShow: () => this.attachEvents()
     });
   },
 
   attachEvents() {
-    document.getElementById("generateProject").onclick = () => {
+    const btn = document.getElementById("generateProject");
+    if (!btn) return;
+
+    btn.onclick = () => {
       const level = document.getElementById("level").value;
       const tech = document.getElementById("tech").value;
 
-      const list = projects.filter(p => p.level === level && p.tech.includes(tech));
-      if (!list.length) return alert("No project found");
+      const list = projects.filter(
+        p => p.level === level && p.tech.includes(tech)
+      );
+
+      if (!list.length) {
+        alert("No project found");
+        return;
+      }
 
       const project = list[Math.floor(Math.random() * list.length)];
       this.render(project);
-      this.createFiles(project);
     };
   },
 
@@ -40,15 +51,7 @@ export default {
     document.getElementById("result").innerHTML = `
       <h3>${p.title}</h3>
       <p>${p.description}</p>
-      <pre>${p.structure.join("\n")}</pre>
+      <pre>${p.structure.join("\\n")}</pre>
     `;
-  },
-
-  createFiles(p) {
-    const fs = acode.require("fs");
-    const root = acode.projectRoot;
-    fs.writeFileSync(root + "/index.html", p.starter.html);
-    fs.writeFileSync(root + "/style.css", p.starter.css);
-    fs.writeFileSync(root + "/script.js", p.starter.js);
   }
 };
