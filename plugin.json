@@ -1,0 +1,9 @@
+{
+  "id": "projectgen",
+  "name": "ProjectGen",
+  "main": "index.js",
+  "version": "1.0.0",
+  "author": "Shivu.js",
+  "description": "Generate frontend project ideas with starter code for beginners.",
+  "minAcodeVersion": "1.8.0"
+}
